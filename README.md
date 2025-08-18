@@ -11,7 +11,7 @@
 String art is a technique where nails are hammered around the perimeter of a board and connected with thread to recreate an image. This program analyzes digital images and generates the optimal sequence of nail-to-nail connections to reproduce the image using string.
 
 <div align="center">
-  <img src="docs/string-art-example.png" alt="String Art Example" width="600">
+  <img src="images/GaussPNG-GaussStrings.png" alt="String Art Example" width="600">
   <p><i>Example: Digital image → String art instructions → Physical artwork</i></p>
 </div>
 
@@ -397,3 +397,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 <div align="center">
   <p><strong>Transform pixels into physical art, one string at a time! 🧵✨</strong></p>
 </div>
+
