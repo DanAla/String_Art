@@ -390,11 +390,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - 🐛 **Issues**: [GitHub Issues](https://github.com/yourusername/string-art-generator/issues)
 - 💬 **Discussions**: [GitHub Discussions](https://github.com/yourusername/string-art-generator/discussions)
-- 📧 **Email**: your.email@example.com
 
 ---
 
 <div align="center">
   <p><strong>Transform pixels into physical art, one string at a time! 🧵✨</strong></p>
 </div>
+
 
