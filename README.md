@@ -55,8 +55,8 @@
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/string-art-generator.git
-   cd string-art-generator
+   git clone https://github.com/DanAla/String_Art.git
+   cd String_Art
    ```
 
 2. **Build the project**
@@ -254,7 +254,7 @@ image.ext-n[nails]-s[strings]-[layout]-[contrast]-[thread]-[mode_params].txt/.sv
 
 ### Project Structure
 ```
-string-art-generator/
+String_Art/
 ├── String_Art.cpp           # Main program and CLI
 ├── image_processing.h/cpp   # Image loading and processing
 ├── string_art_generator.h/cpp # Core string art algorithms
@@ -384,8 +384,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- 🐛 **Issues**: [GitHub Issues](https://github.com/yourusername/string-art-generator/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/yourusername/string-art-generator/discussions)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/DanAla/String_Art/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/DanAla/String_Art/discussions)
 
 ---
 
