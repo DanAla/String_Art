@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![C++](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://isocpp.org/)
-[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-lightgrey.svg)](https://github.com/DanAla/String_Art)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-lightgrey.svg)](https://github.com/yourusername/string-art-generator)
 
 > Transform your digital images into stunning physical string art with step-by-step nail connection instructions.
 
@@ -390,6 +390,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - 🐛 **Issues**: [GitHub Issues](https://github.com/yourusername/string-art-generator/issues)
 - 💬 **Discussions**: [GitHub Discussions](https://github.com/yourusername/string-art-generator/discussions)
+- 📧 **Email**: your.email@example.com
 
 ---
 
