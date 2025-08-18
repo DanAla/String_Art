@@ -288,7 +288,7 @@ bool loadBMPColor(const std::string& filename, ImageData& img) {
     file.read(reinterpret_cast<char*>(&header.ncolors), 4);
     file.read(reinterpret_cast<char*>(&header.importantcolors), 4);
     
-    if (header.type != 0x4D42 || header.bits != 24) return false;
+    if (header.type != 0x4D42 || (header.bits != 24 && header.bits != 32)) return false;
     
     int width = header.width;
     int height = abs(header.height);
@@ -297,15 +297,17 @@ bool loadBMPColor(const std::string& filename, ImageData& img) {
     
     file.seekg(header.offset);
     
-    int rowSize = ((width * 3 + 3) / 4) * 4;
+    int bytesPerPixel = header.bits / 8;  // 3 for 24-bit, 4 for 32-bit
+    int rowSize = ((width * bytesPerPixel + 3) / 4) * 4;
     std::vector<unsigned char> row(rowSize);
     
     for (int y = 0; y < height; y++) {
         file.read(reinterpret_cast<char*>(row.data()), rowSize);
         for (int x = 0; x < width; x++) {
-            unsigned char b = row[x * 3];
-            unsigned char g = row[x * 3 + 1];
-            unsigned char r = row[x * 3 + 2];
+            unsigned char b = row[x * bytesPerPixel];
+            unsigned char g = row[x * bytesPerPixel + 1];
+            unsigned char r = row[x * bytesPerPixel + 2];
+            // Skip alpha channel if present (32-bit BMP)
             
             int flipped_y = height - 1 - y;
             int colorIdx = (flipped_y * width + x) * 3;
@@ -926,19 +928,119 @@ bool loadPNG(const std::string& filename, std::vector<unsigned char>& imageData,
     return true;
 }
 
-// PNG color loading (wrapper)
+// PNG color loading (implementation)
 bool loadPNGColor(const std::string& filename, ImageData& img) {
-    std::vector<unsigned char> imageData;
-    int width, height;
-    
-    if (!loadPNG(filename, imageData, width, height)) {
+    if (!isPNGFile(filename)) {
         return false;
     }
     
+    std::ifstream file(filename, std::ios::binary);
+    if (!file.is_open()) return false;
+    
+    // Skip PNG signature
+    file.seekg(8);
+    
+    int width = 0, height = 0;
+    unsigned char bitDepth = 0, colorType = 0;
+    std::vector<unsigned char> compressedData;
+    
+    // Parse PNG chunks
+    while (!file.eof()) {
+        uint32_t chunkLength = readBigEndianUint32(file);
+        if (file.eof()) break;
+        
+        char chunkType[5] = {0};
+        file.read(chunkType, 4);
+        if (file.eof()) break;
+        
+        if (std::string(chunkType) == "IHDR") {
+            // Image header
+            width = readBigEndianUint32(file);
+            height = readBigEndianUint32(file);
+            
+            unsigned char ihdrData[5];
+            file.read(reinterpret_cast<char*>(ihdrData), 5);
+            
+            bitDepth = ihdrData[0];
+            colorType = ihdrData[1];
+            
+            // Only support 8-bit RGB (colorType 2) or RGBA (colorType 6)
+            if (bitDepth != 8 || (colorType != 2 && colorType != 6)) {
+                std::cout << "PNG format not supported for color mode: bitDepth=" << bitDepth << ", colorType=" << colorType << std::endl;
+                return false;
+            }
+        }
+        else if (std::string(chunkType) == "IDAT") {
+            // Image data
+            std::vector<unsigned char> chunkData(chunkLength);
+            file.read(reinterpret_cast<char*>(chunkData.data()), chunkLength);
+            compressedData.insert(compressedData.end(), chunkData.begin(), chunkData.end());
+        }
+        else if (std::string(chunkType) == "IEND") {
+            // End of image
+            break;
+        }
+        else {
+            // Skip unknown chunks
+            file.seekg(chunkLength, std::ios::cur);
+        }
+        
+        // Skip CRC
+        file.seekg(4, std::ios::cur);
+    }
+    
+    if (width == 0 || height == 0 || compressedData.empty()) {
+        return false;
+    }
+    
+    // Initialize color image data
     img = ImageData(width, height, true);
-    // Convert grayscale data to color data would go here
-    // For now, return false since PNG loading is not fully implemented
-    return false;
+    
+    // Simple zlib/deflate decompression
+    std::vector<unsigned char> decompressedData;
+    if (!zlibDecompress(compressedData, decompressedData)) {
+        std::cout << "Failed to decompress PNG data" << std::endl;
+        return false;
+    }
+    
+    // Process PNG data and extract RGB
+    int bytesPerPixel = (colorType == 2) ? 3 : 4; // RGB or RGBA
+    int rowBytes = width * bytesPerPixel;
+    size_t expectedDataSize = height * (rowBytes + 1); // PNG filtered data size
+    
+    if (decompressedData.size() >= expectedDataSize) {
+        // Apply PNG filters and extract RGB data
+        for (int y = 0; y < height; y++) {
+            if (y * (rowBytes + 1) + rowBytes >= decompressedData.size()) break;
+            
+            unsigned char filter = decompressedData[y * (rowBytes + 1)];
+            unsigned char* row = &decompressedData[y * (rowBytes + 1) + 1];
+            
+            // Apply PNG filter
+            applyPNGFilter(filter, row, y > 0 ? &decompressedData[(y-1) * (rowBytes + 1) + 1] : nullptr, rowBytes, bytesPerPixel);
+            
+            // Extract RGB data
+            for (int x = 0; x < width; x++) {
+                if (x * bytesPerPixel + 2 >= rowBytes) break;
+                unsigned char r = row[x * bytesPerPixel];
+                unsigned char g = row[x * bytesPerPixel + 1];
+                unsigned char b = row[x * bytesPerPixel + 2];
+                
+                int colorIdx = (y * width + x) * 3;
+                img.colorData[colorIdx] = r;
+                img.colorData[colorIdx + 1] = g;
+                img.colorData[colorIdx + 2] = b;
+            }
+        }
+    } else {
+        std::cout << "PNG: Insufficient decompressed data for color extraction" << std::endl;
+        return false;
+    }
+    
+    // Perform CMYK color separation
+    img.performColorSeparation();
+    
+    return true;
 }
 
 // Parse JPEG header to extract basic information
