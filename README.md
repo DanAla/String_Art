@@ -2,9 +2,14 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![C++](https://img.shields.io/badge/C%2B%2B-17-blue.svg)](https://isocpp.org/)
-[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-lightgrey.svg)](https://github.com/yourusername/string-art-generator)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-lightgrey.svg)](https://github.com/DanAla/String_Art)
 
 > Transform your digital images into stunning physical string art with step-by-step nail connection instructions.
+
+<div align="center">
+  <img src="images/GaussPNG-GaussStrings.png" alt="String Art Example" width="600">
+  <p><i>Example: Digital image → String art instructions → Physical artwork</i></p>
+</div>
 
 ## ✨ Features
 
@@ -387,6 +392,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 <div align="center">
   <p><strong>Transform pixels into physical art, one string at a time! 🧵✨</strong></p>
 </div>
+
 
 
 
